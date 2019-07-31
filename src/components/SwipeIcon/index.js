@@ -1,6 +1,15 @@
 import React, { Component } from 'react';
-import { Image, View, Animated } from 'react-native';
+import { Image, View, Animated, Text, StyleSheet } from 'react-native';
 import images from '../../assets/images';
+
+const styles = StyleSheet.create({
+	iconMines: {
+    width: 40,
+    height: 4,
+    backgroundColor: '#D0D1D5',
+    borderRadius: 2
+	}
+});
 
 export default class SwipeIcon extends Component {
   constructor(props) {
@@ -22,12 +31,7 @@ export default class SwipeIcon extends Component {
     const { icon, showIcon } = this.state;
     return (
       <View style={{ alignItems: 'center', height: 10, marginBottom: 5 }}>
-        {showIcon && (
-          <Image
-            source={icon}
-            style={{ width: 35, height: icon === images.minus ? 5 : 10 }}
-          />
-        )}
+        <View style={styles.iconMines}></View>
       </View>
     );
   }
