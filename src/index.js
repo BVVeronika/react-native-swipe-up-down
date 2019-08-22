@@ -13,7 +13,7 @@ import {
 import SwipeIcon from "./components/SwipeIcon";
 import images from "./assets/images";
 
-const MARGIN_TOP = Platform.OS === "ios" ? 50 : 0;
+const MARGIN_TOP = 50;
 const DEVICE_HEIGHT = Dimensions.get("window").height - MARGIN_TOP;
 type Props = {
   hasRef?: () => void,
