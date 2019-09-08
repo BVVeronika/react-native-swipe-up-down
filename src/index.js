@@ -24,7 +24,8 @@ type Props = {
   style?: object,
   onShowMini?: () => void,
   onShowFull?: () => void,
-  animation?: "linear" | "spring" | "easeInEaseOut" | "none"
+  animation?: "linear" | "spring" | "easeInEaseOut" | "none",
+  forceShowFullVersion?: boolean
 };
 export default class SwipeUpDown extends Component<Props> {
 
@@ -34,9 +35,11 @@ export default class SwipeUpDown extends Component<Props> {
 
   constructor(props) {
     super(props);
+    const collapsed = this.props.forceShowFullVersion ? false : true;
     this.state = {
-      collapsed: true
+      collapsed
     };
+
     this.disablePressToShow = props.disablePressToShow;
     this.SWIPE_HEIGHT = props.swipeHeight || 60;
     this._panResponder = null;
@@ -69,7 +72,6 @@ export default class SwipeUpDown extends Component<Props> {
     if (this.state.collapsed) {
       return true;
     }
-
     const { dx, dy } = gestureState;
     if (dy < -1) {
       this.props.onMoveUp && this.props.onMoveUp();
