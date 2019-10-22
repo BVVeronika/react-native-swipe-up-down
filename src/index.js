@@ -12,9 +12,8 @@ import {
 
 import SwipeIcon from "./components/SwipeIcon";
 import images from "./assets/images";
+import { zip } from "rxjs";
 
-const MARGIN_TOP = 50;
-const DEVICE_HEIGHT = Dimensions.get("window").height - MARGIN_TOP;
 type Props = {
   hasRef?: () => void,
   swipeHeight?: number,
@@ -25,7 +24,8 @@ type Props = {
   onShowMini?: () => void,
   onShowFull?: () => void,
   animation?: "linear" | "spring" | "easeInEaseOut" | "none",
-  forceShowFullVersion?: boolean
+  forceShowFullVersion?: boolean,
+  marginTop?: number
 };
 export default class SwipeUpDown extends Component<Props> {
 
@@ -39,6 +39,9 @@ export default class SwipeUpDown extends Component<Props> {
     this.state = {
       collapsed
     };
+
+    this.marginTop = this.props.marginTop | 50
+    this.deviceHeight = Dimensions.get("window").height - this.marginTop;
 
     this.disablePressToShow = props.disablePressToShow;
     this.SWIPE_HEIGHT = props.swipeHeight || 60;
@@ -106,18 +109,18 @@ export default class SwipeUpDown extends Component<Props> {
       // SWIPE DOWN
 
       this.customStyle.style.top = this.top + gestureState.dy;
-      this.customStyle.style.height = DEVICE_HEIGHT - gestureState.dy;
+      this.customStyle.style.height = this.deviceHeight - gestureState.dy;
       this.swipeIconRef && this.swipeIconRef.setState({ icon: images.minus });
       !this.state.collapsed && this.setState({ collapsed: true });
       this.updateNativeProps();
     } else if (this.checkCollapsed && gestureState.dy < -60) {
       // SWIPE UP
       this.top = 0;
-      this.customStyle.style.top = DEVICE_HEIGHT + gestureState.dy;
+      this.customStyle.style.top = this.deviceHeight + gestureState.dy;
       this.customStyle.style.height = -gestureState.dy + this.SWIPE_HEIGHT;
       this.swipeIconRef &&
         this.swipeIconRef.setState({ icon: images.minus, showIcon: true });
-      if (this.customStyle.style.top <= DEVICE_HEIGHT / 2) {
+      if (this.customStyle.style.top <= this.deviceHeight / 2) {
         this.swipeIconRef &&
           this.swipeIconRef.setState({
             icon: images.arrow_down,
@@ -140,7 +143,7 @@ export default class SwipeUpDown extends Component<Props> {
   showFull() {
     const { onShowFull } = this.props;
     this.customStyle.style.top = 0;
-    this.customStyle.style.height = DEVICE_HEIGHT;
+    this.customStyle.style.height = this.deviceHeight;
     this.swipeIconRef &&
       this.swipeIconRef.setState({ icon: images.mines, showIcon: true });
     this.updateNativeProps();
@@ -153,8 +156,8 @@ export default class SwipeUpDown extends Component<Props> {
     const { onShowMini, itemMini } = this.props;
     // this.SWIPE_HEIGHT = 150; //Avoid hiding when swiping down.
     this.customStyle.style.top = itemMini
-      ? DEVICE_HEIGHT - this.SWIPE_HEIGHT
-      : DEVICE_HEIGHT;
+      ? this.deviceHeight - this.SWIPE_HEIGHT
+      : this.deviceHeight;
     this.customStyle.style.height = itemMini ? this.SWIPE_HEIGHT : 0;
     this.swipeIconRef && this.swipeIconRef.setState({ showIcon: false });
     this.updateNativeProps();
@@ -174,7 +177,7 @@ export default class SwipeUpDown extends Component<Props> {
           styles.wrapSwipe,
           {
             height: this.SWIPE_HEIGHT,
-            marginTop: MARGIN_TOP
+            marginTop: this.marginTop
           },
           !itemMini && collapsed && { marginBottom: -200 },
           style
@@ -194,9 +197,11 @@ export default class SwipeUpDown extends Component<Props> {
               {itemMini}
             </TouchableOpacity>
           ) : null
-        ) : (
-          itemFull
-        )}
+        ) : ([
+          itemFull,
+          <TouchableOpacity style={styles.swipeElement} />
+        ])}
+        
       </View>
     );
   }
@@ -212,5 +217,12 @@ const styles = StyleSheet.create({
     bottom: 0,
     left: 0,
     right: 0
+  },
+  swipeElement: {
+    position: 'absolute',
+    top: 0,
+    height: 100,
+    width: '100%',
+    opacity: .5
   }
 });
